@@ -1,3 +1,5 @@
+const API_URL = import.meta.env.VITE_API_URL;
+s
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
