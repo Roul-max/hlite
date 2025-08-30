@@ -1,16 +1,13 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-api.post("/auth/login", { email, password });  
-
 
 const api = axios.create({
-  baseURL: API_BASE_URL, // now includes /api
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
-
 
 // Request interceptor
 api.interceptors.request.use(
