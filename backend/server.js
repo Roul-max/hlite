@@ -13,25 +13,29 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
 // Security middleware
 app.use(helmet());
-app.use(cors({
-  origin: [
-    "http://localhost:5173",        // local dev
-    "https://hlite.vercel.app"      // Vercel frontend
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-}));
 
+// ✅ Fixed CORS
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",     // local dev
+      "https://hlite.vercel.app",  // Vercel frontend
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
+// ✅ Handle preflight requests globally
+app.options("*", cors());
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
-  max: 100, 
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: 'Too many requests from this IP, please try again later.',
 });
 app.use(limiter);
@@ -55,7 +59,9 @@ app.use(errorHandler);
 // Connect to MongoDB
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/auth-notes-app');
+    const conn = await mongoose.connect(
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/auth-notes-app'
+    );
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error('Error connecting to MongoDB:', error.message);
