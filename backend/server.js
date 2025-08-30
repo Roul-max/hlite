@@ -20,8 +20,9 @@ app.use(helmet());
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",     // local dev
-      "https://hlite.vercel.app",  // Vercel frontend
+      "http://localhost:5173",                          // local dev
+      "https://hlite.vercel.app",                       // main Vercel prod
+      /\.vercel\.app$/                                  // ✅ allow all Vercel preview URLs
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
