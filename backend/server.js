@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 5000;
 
 // Security middleware
 app.use(helmet());
+app.use('/api/auth', authRoutes);
 
 // ✅ Fixed CORS
 app.use(
