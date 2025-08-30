@@ -6,18 +6,7 @@ import InputField from '../components/InputField';
 import Button from '../components/Button';
 import ErrorMessage from '../components/ErrorMessage';
 import GoogleAuthButton from '../components/GoogleAuthButton';
-import { login } from "../services/authService";
-
-const handleLogin = async () => {
-  try {
-    const res = await login(email, password);
-    localStorage.setItem("token", res.data.token);
-    // redirect user
-  } catch (err) {
-    console.error(err);
-    alert("Login failed");
-  }
-};
+import { login as apiLogin } from "../services/authService"; // ✅ renamed to apiLogin
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -27,7 +16,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login } = useAuth(); // still available if you need to set auth context
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -60,15 +49,24 @@ const LoginPage = () => {
     setError('');
 
     try {
-      const result = await login(formData.email, formData.password);
-      
+      // ✅ call API login
+      const result = await apiLogin(formData.email, formData.password);
+
       if (result.requiresOTP) {
         navigate('/verify-otp', { state: { email: formData.email } });
       } else {
+        // ✅ store token
+        localStorage.setItem("token", result.token);
+
+        // ✅ optionally update auth context
+        if (login) {
+          login(result.user, result.token);
+        }
+
         navigate('/dashboard');
       }
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -118,11 +116,7 @@ const LoginPage = () => {
 
             {error && <ErrorMessage message={error} />}
 
-            <Button
-              type="submit"
-              loading={loading}
-              className="w-full"
-            >
+            <Button type="submit" loading={loading} className="w-full">
               Sign In
             </Button>
           </form>
