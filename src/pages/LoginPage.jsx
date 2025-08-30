@@ -6,6 +6,18 @@ import InputField from '../components/InputField';
 import Button from '../components/Button';
 import ErrorMessage from '../components/ErrorMessage';
 import GoogleAuthButton from '../components/GoogleAuthButton';
+import { login } from "../services/authService";
+
+const handleLogin = async () => {
+  try {
+    const res = await login(email, password);
+    localStorage.setItem("token", res.data.token);
+    // redirect user
+  } catch (err) {
+    console.error(err);
+    alert("Login failed");
+  }
+};
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
